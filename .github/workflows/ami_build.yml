@@ -1,0 +1,47 @@
+# terraform_example/github_actions/test02_packer/.github/workflows/ami_build.yml
+
+name: "Create Packer AMI"
+on:
+  push: 
+    branches:
+      - master
+    paths:
+      - "packer/**"
+  workflow_dispatch:
+    
+jobs: 
+  packer_build:
+    runs-on: ubuntu-latest
+    name: "Build AMI with packer & ansible"
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Packe
+        uses: hashicorp/setup-packer@main
+        with: 
+          version: "latest"
+
+      - name: Aws Configure 
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ap-northeast-2
+
+
+      - name: Packer Init Build
+        run: |
+          packer init
+          packer build .
+        working-directory: ./packer
+      
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v4
+
+      - name: Terraform Init & Apply
+        run: |
+          terraform init
+          terraform apply --auto-approve
+        working-directory: ./terraform
+
