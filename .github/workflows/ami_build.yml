@@ -1,4 +1,4 @@
-# terraform_example/github_actions/test02_packer/.github/workflows/ami_build.yml
+# github_actions/test02_packer/.github/workflows/ami_build.yml
 
 name: "Create Packer AMI"
 on:
